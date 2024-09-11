@@ -14,7 +14,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-hub/kubectl@master
 
       - uses: azure/login@v1
         with:
@@ -33,6 +32,8 @@ jobs:
         with:
           resource-group: "sit722cnpart5"
           cluster-name: "sit722cnpart5"
+
+      - uses: azure/setup-kubectl@v4
 
       - name: Build and push Docker image
         run: |
