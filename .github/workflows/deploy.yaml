@@ -6,7 +6,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     env:
-      CONTAINER_REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
+      CONTAINER_REGISTRY: sit722part5.azurecr.io
       VERSION: ${{ github.sha }}
       REGISTRY_UN: ${{ secrets.REGISTRY_UN }}
       REGISTRY_PW: ${{ secrets.REGISTRY_PW }}
@@ -14,20 +14,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: azure/docker-login@v2
-        with:
-          login-server: ${{ secrets.CONTAINER_REGISTRY }}
-          username: ${{ secrets.REGISTRY_UN }}
-          password: ${{ secrets.REGISTRY_PW }}
 
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - uses: azure/aks-set-context@v3
-        with:
-          resource-group: "sit722cnpart5"
-          cluster-name: "sit722cnpart5"
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
@@ -35,14 +25,31 @@ jobs:
       - name: Terraform Init
         run: cd terraform && terraform init
 
-      - name: Terraform import
-        run: cd terraform && terraform import azurerm_resource_group.cloudnative /subscriptions/$(az account show --query id -o tsv)/resourceGroups/sit722cnpart5
-
       - name: Terraform Apply
-        run: cd terraform && terraform apply -auto-approve
+        run: cd terraform && terraform apply --auto-approve
+
+      - uses: azure/aks-set-context@v3
+        with:
+          resource-group: "sit722part5"
+          cluster-name: "sit722part5"
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v1
+
+      - name: Get ACR Credentials
+        id: get_acr_credentials
+        run: |
+          ACR_USERNAME=$(az acr credential show --name sit722part5 --query username -o tsv)
+          ACR_PASSWORD=$(az acr credential show --name sit722part5 --query 'passwords[0].value' -o tsv)
+
+          echo "ACR_USERNAME=$ACR_USERNAME" >> $GITHUB_ENV
+          echo "ACR_PASSWORD=$ACR_PASSWORD" >> $GITHUB_ENV
+
+      - uses: azure/docker-login@v2
+        with:
+          login-server: ${{ secrets.CONTAINER_REGISTRY }}
+          username: ${{ env.ACR_USERNAME }}
+          password: ${{ env.ACR_PASSWORD }}
 
       - name: Build and push Docker image
         run: |
