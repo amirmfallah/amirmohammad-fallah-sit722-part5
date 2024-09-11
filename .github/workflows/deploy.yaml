@@ -14,10 +14,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: azure/docker-login@v2
+        with:
+          login-server: ${{ secrets.CONTAINER_REGISTRY }}
+          username: ${{ secrets.REGISTRY_UN }}
+          password: ${{ secrets.REGISTRY_PW }}
 
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: azure/aks-set-context@v3
+        with:
+          resource-group: "sit722cnpart5"
+          cluster-name: "sit722cnpart5"
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
@@ -28,12 +38,8 @@ jobs:
       - name: Terraform Apply
         run: cd terraform && terraform apply -auto-approve
 
-      - uses: azure/aks-set-context@v3
-        with:
-          resource-group: "sit722cnpart5"
-          cluster-name: "sit722cnpart5"
-
-      - uses: azure/setup-kubectl@v4
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
 
       - name: Build and push Docker image
         run: |
