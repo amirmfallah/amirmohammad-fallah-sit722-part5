@@ -6,7 +6,6 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     env:
-      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       CONTAINER_REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
       VERSION: ${{ github.sha }}
       REGISTRY_UN: ${{ secrets.REGISTRY_UN }}
@@ -21,11 +20,6 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - uses: azure/aks-set-context@v3
-        with:
-          resource-group: "sit722cnpart5"
-          cluster-name: "sit722cnpart5"
-
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -34,6 +28,11 @@ jobs:
 
       - name: Terraform Apply
         run: cd terraform && terraform apply -auto-approve
+
+      - uses: azure/aks-set-context@v3
+        with:
+          resource-group: "sit722cnpart5"
+          cluster-name: "sit722cnpart5"
 
       - name: Build and push Docker image
         run: |
