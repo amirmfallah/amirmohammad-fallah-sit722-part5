@@ -5,16 +5,32 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    env:
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      CONTAINER_REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
+      VERSION: ${{ github.sha }}
+      REGISTRY_UN: ${{ secrets.REGISTRY_UN }}
+      REGISTRY_PW: ${{ secrets.REGISTRY_PW }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
       - uses: actions/checkout@v4
       - uses: actions-hub/kubectl@master
-        env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
-          CONTAINER_REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
-          VERSION: ${{ github.sha }}
-          REGISTRY_UN: ${{ secrets.REGISTRY_UN }}
-          REGISTRY_PW: ${{ secrets.REGISTRY_PW }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        with:
-          args: get pods
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init terraform
+
+      - name: Terraform Apply
+        run: cd terraform && terraform apply -auto-approve
+
+      - name: Build and push Docker image
+        run: |
+          ./scripts/build-image.sh
+          ./scripts/push-image.sh
+
+      - name: Deploy to Kubernetes
+        run: |
+          ./scripts/deploy.sh
