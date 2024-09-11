@@ -29,15 +29,6 @@ jobs:
           resource-group: "sit722cnpart5"
           cluster-name: "sit722cnpart5"
 
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Terraform Init
-        run: cd terraform && terraform init
-
-      - name: Terraform Apply
-        run: cd terraform && terraform apply -auto-approve
-
       - name: Set up kubectl
         uses: azure/setup-kubectl@v1
 
