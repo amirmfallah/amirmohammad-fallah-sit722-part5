@@ -32,11 +32,11 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform import
-        run: cd terraform && terraform import azurerm_resource_group.cloudnative /subscriptions/$(az account show --query id -o tsv)/resourceGroups/sit722cnpart5
-
       - name: Terraform Init
         run: cd terraform && terraform init
+
+      - name: Terraform import
+        run: cd terraform && terraform import azurerm_resource_group.cloudnative /subscriptions/$(az account show --query id -o tsv)/resourceGroups/sit722cnpart5
 
       - name: Terraform Apply
         run: cd terraform && terraform apply -auto-approve
