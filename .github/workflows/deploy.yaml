@@ -6,7 +6,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     env:
-      CONTAINER_REGISTRY: sit722part5.azurecr.io
+      CONTAINER_REGISTRY: sit722cnpart5.azurecr.io
       VERSION: ${{ github.sha }}
       REGISTRY_UN: ${{ secrets.REGISTRY_UN }}
       REGISTRY_PW: ${{ secrets.REGISTRY_PW }}
@@ -30,8 +30,8 @@ jobs:
 
       - uses: azure/aks-set-context@v3
         with:
-          resource-group: "sit722part5"
-          cluster-name: "sit722part5"
+          resource-group: "sit722cnpart5"
+          cluster-name: "sit722cnpart5"
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v1
@@ -39,8 +39,8 @@ jobs:
       - name: Get ACR Credentials
         id: get_acr_credentials
         run: |
-          ACR_USERNAME=$(az acr credential show --name sit722part5 --query username -o tsv)
-          ACR_PASSWORD=$(az acr credential show --name sit722part5 --query 'passwords[0].value' -o tsv)
+          ACR_USERNAME=$(az acr credential show --name sit722cnpart5 --query username -o tsv)
+          ACR_PASSWORD=$(az acr credential show --name sit722cnpart5 --query 'passwords[0].value' -o tsv)
 
           echo "ACR_USERNAME=$ACR_USERNAME" >> $GITHUB_ENV
           echo "ACR_PASSWORD=$ACR_PASSWORD" >> $GITHUB_ENV
