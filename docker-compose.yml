@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  book_catalog:
+    image: book-catalog:v1
+    build:
+      context: ./book_catalog
+      dockerfile: Dockerfile
+    container_name: book_catalog_service
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    volumes:
+      - ./book_catalog:/app
+    ports:
+      - "8000:80"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 80
+
+  inventory_management:
+    image: inventory-management:v1
+    build:
+      context: ./inventory_management
+      dockerfile: Dockerfile
+    container_name: inventory_management_service
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    volumes:
+      - ./inventory_management:/app
+    ports:
+      - "8001:80"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 80
