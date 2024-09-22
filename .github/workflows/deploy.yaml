@@ -48,20 +48,11 @@ jobs:
       - name: Set up kubectl
         uses: azure/setup-kubectl@v1
 
-      - name: Get ACR Credentials
-        id: get_acr_credentials
-        run: |
-          ACR_USERNAME=$(az acr credential show --name sit722cnpart5actions --query username -o tsv)
-          ACR_PASSWORD=$(az acr credential show --name sit722cnpart5actions --query 'passwords[0].value' -o tsv)
-
-          echo "ACR_USERNAME=$ACR_USERNAME" >> $GITHUB_ENV
-          echo "ACR_PASSWORD=$ACR_PASSWORD" >> $GITHUB_ENV
-
       - uses: azure/docker-login@v2
         with:
           login-server: ${{ env.CONTAINER_REGISTRY }}
-          username: ${{ env.ACR_USERNAME }}
-          password: ${{ env.ACR_PASSWORD }}
+          username: ${{ env.REGISTRY_UN }}
+          password: ${{ env.REGISTRY_PW }}
 
       - name: Build
         run: |
