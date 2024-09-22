@@ -6,7 +6,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     env:
-      CONTAINER_REGISTRY: sit722cnpart5.azurecr.io
+      CONTAINER_REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
       VERSION: ${{ github.sha }}
       REGISTRY_UN: ${{ secrets.REGISTRY_UN }}
       REGISTRY_PW: ${{ secrets.REGISTRY_PW }}
@@ -36,24 +36,18 @@ jobs:
       - name: Set up kubectl
         uses: azure/setup-kubectl@v1
 
-      - name: Get ACR Credentials
-        id: get_acr_credentials
-        run: |
-          ACR_USERNAME=$(az acr credential show --name sit722cnpart5 --query username -o tsv)
-          ACR_PASSWORD=$(az acr credential show --name sit722cnpart5 --query 'passwords[0].value' -o tsv)
-
-          echo "ACR_USERNAME=$ACR_USERNAME" >> $GITHUB_ENV
-          echo "ACR_PASSWORD=$ACR_PASSWORD" >> $GITHUB_ENV
-
       - uses: azure/docker-login@v2
         with:
-          login-server: ${{ secrets.CONTAINER_REGISTRY }}
-          username: ${{ env.ACR_USERNAME }}
-          password: ${{ env.ACR_PASSWORD }}
+          login-server: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ env.REGISTRY_UN }}
+          password: ${{ env.REGISTRY_PW }}
 
-      - name: Build and push Docker image
+      - name: Build
         run: |
           ./scripts/build-image.sh
+
+      - name: Push
+        run: |
           ./scripts/push-image.sh
 
       - name: Deploy to Kubernetes
