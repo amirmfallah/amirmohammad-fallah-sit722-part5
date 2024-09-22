@@ -1,6 +1,12 @@
 # Initialises Terraform providers and sets their version numbers.
 
 terraform {
+  backend "s3" {
+    bucket = "cloudnative-tf-state"
+    key    = "tfstate"
+    region = "us-east-1"
+  }
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
