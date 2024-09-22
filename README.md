@@ -12,4 +12,4 @@ docker push sit722cnpart5.azurecr.io/inventory-management:latest
 
 az acr repository list --name sit722cnpart5 --output table
 
-az aks get-credentials --resource-group sit722cnpart5 --name sit722cnpart5 --overwrite-existing
+az aks get-credentials --resource-group sit722cnpart5actions --name sit722cnpart5actions --overwrite-existing
