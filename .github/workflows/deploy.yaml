@@ -26,6 +26,14 @@ jobs:
         working-directory: ./terraform
         run: terraform init
 
+      # Import existing resource group
+      - name: Import Azure Resource Group
+        if: github.ref == 'refs/heads/main'
+        run: |
+          terraform import azurerm_resource_group.cloudnative /subscriptions/31d2b676-a9ae-4fa4-ad75-a9623b06c8d7/resourceGroups/sit722cnpart5
+        working-directory: ./terraform
+        continue-on-error: true
+
       - name: "Terraform Validate"
         working-directory: ./terraform
         run: terraform validate
