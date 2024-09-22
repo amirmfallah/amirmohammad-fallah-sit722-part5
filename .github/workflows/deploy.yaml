@@ -32,7 +32,7 @@ jobs:
 
       - name: Import all resources
         if: github.ref == 'refs/heads/main'
-        run: ./scripts/import.sh
+        run: ../scripts/import.sh
         working-directory: ./terraform
         continue-on-error: true
 
