@@ -30,26 +30,9 @@ jobs:
         working-directory: ./terraform
         run: terraform validate
 
-      - name: Import Azure Resource Group
+      - name: Import all resources
         if: github.ref == 'refs/heads/main'
-        run: |
-          terraform import azurerm_resource_group.cloudnative /subscriptions/31d2b676-a9ae-4fa4-ad75-a9623b06c8d7/resourceGroups/sit722cnpart5actions
-        working-directory: ./terraform
-        continue-on-error: true
-
-      # Import existing Azure Container Registry
-      - name: Import Azure Container Registry
-        if: github.ref == 'refs/heads/main'
-        run: |
-          terraform import azurerm_container_registry.container_registry /subscriptions/31d2b676-a9ae-4fa4-ad75-a9623b06c8d7/resourceGroups/sit722cnpart5actions/providers/Microsoft.ContainerRegistry/registries/sit722cnpart5actions
-        working-directory: ./terraform
-        continue-on-error: true
-
-      # Import existing Azure Kubernetes Cluster
-      - name: Import Azure Kubernetes Cluster
-        if: github.ref == 'refs/heads/main'
-        run: |
-          terraform import azurerm_kubernetes_cluster.cluster /subscriptions/31d2b676-a9ae-4fa4-ad75-a9623b06c8d7/resourceGroups/sit722cnpart5actions/providers/Microsoft.ContainerService/managedClusters/sit722cnpart5actions
+        run: ./scripts/import.sh
         working-directory: ./terraform
         continue-on-error: true
 
