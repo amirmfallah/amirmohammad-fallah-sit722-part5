@@ -57,6 +57,7 @@ dmypy.json
 # Terraform state files
 *.tfstate
 *.tfstate.*
+*.terraform.lock.hcl
 
 # Terraform backup files
 *.backup
