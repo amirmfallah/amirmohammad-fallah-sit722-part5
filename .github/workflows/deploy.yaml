@@ -23,10 +23,22 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: cd terraform && terraform init
+        working-directory: ./terraform
+        run: terraform init
 
-      - name: Terraform Apply
-        run: cd terraform && terraform apply --auto-approve
+      - name: "Terraform Validate"
+        working-directory: ./terraform
+        run: terraform validate
+
+      - name: "Terraform Plan"
+        working-directory: ./terraform
+        id: plan
+        run: terraform plan -out=tfplan
+
+      - name: "Terraform Apply"
+        working-directory: ./terraform
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve tfplan
 
       - uses: azure/aks-set-context@v3
         with:
